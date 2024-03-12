@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TodoForm from "./TodoForm";
 import Todo from "./Todo";
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    const storedTodos = JSON.parse(localStorage.getItem("todos"));
+    if (storedTodos) {
+      setTodos(storedTodos);
+    }
+  }, []);
 
   const addTodo = (todo) => {
     if (!todo.text || /^\s*$/.test(todo.text)) {
@@ -13,7 +20,7 @@ function TodoList() {
     const newTodos = [todo, ...todos];
 
     setTodos(newTodos);
-    console.log(...todos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
   };
 
   const updateTodo = (todoId, newValue) => {
@@ -24,12 +31,15 @@ function TodoList() {
     setTodos((prev) =>
       prev.map((item) => (item.id === todoId ? newValue : item))
     );
+
+    localStorage.setItem("todos", JSON.stringify(todos));
   };
 
   const removeTodo = (id) => {
     const removedArr = [...todos].filter((todo) => todo.id !== id);
 
     setTodos(removedArr);
+    localStorage.setItem("todos", JSON.stringify(removedArr));
   };
 
   const completeTodo = (id) => {
@@ -39,7 +49,9 @@ function TodoList() {
       }
       return todo;
     });
+
     setTodos(updatedTodos);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
   };
 
   return (
