@@ -31,7 +31,7 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
       </div>
       <div className="icons">
         <RiCloseCircleLine
-          onClick={() => removeTodo(todo.id)}
+          onClick={() => removeTodo(todo)}
           className="delete-icon"
         />
         <TiEdit
