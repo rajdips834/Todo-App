@@ -36,7 +36,6 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
             className="edit-icon"
           />
         </div>
-        <div>{}</div>
       </div>
     ));
 

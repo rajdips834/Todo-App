@@ -155,6 +155,7 @@ h1 {
 }
 
 .pagination li {
+  color:#149fff;
   display: inline-block;
   margin: 0 5px;
   padding: 5px 10px;
