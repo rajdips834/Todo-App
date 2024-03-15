@@ -83,11 +83,6 @@ h1 {
   padding: 16px 22px;
 }
 
-.todo-container {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-}
 
 .todo-row {
   display: flex;
@@ -104,6 +99,10 @@ h1 {
   padding: 16px;
   border-radius: 5px;
   width: 90%;
+}
+
+.filter-icon{
+  margin-left:3rem;;
 }
 
 .todo-row:nth-child(4n + 1) {

@@ -1,23 +1,33 @@
-import React, { useState } from "react";
-import TodoForm from "./TodoForm";
+import React, { useEffect, useState } from "react";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { TiEdit } from "react-icons/ti";
 import ReactPaginate from "react-paginate";
+import { FaFilter } from "react-icons/fa";
 
 const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
-  // State to manage the input value which will be used to edit a task
   const [edit, setEdit] = useState({
     id: null,
     value: "",
   });
+  const [filter, setFilter] = useState("ascending");
+  const filterChangeHandler = () => {
+    setFilter(filter === "ascending" ? "descending" : "ascending");
+  };
+  useEffect(() => {
+    // Apply filter logic here if needed
+  }, [filter]);
 
-  // Pagination related code
-  const [pageNumber, setPageNumber] = useState(0); //current page number
-  const todosPerPage = 5; // Number of todos to display per page
-  const pagesVisited = pageNumber * todosPerPage; //
+  const [pageNumber, setPageNumber] = useState(0);
+  const todosPerPage = 5;
+  const pagesVisited = pageNumber * todosPerPage;
 
-  // Slice the todos array to display only the relevant todos for the current page
-  const displayTodos = todos
+  const filteredTodos = todos.sort((a, b) =>
+    filter === "ascending"
+      ? a.text.localeCompare(b.text)
+      : b.text.localeCompare(a.text)
+  );
+
+  const displayTodos = filteredTodos
     .slice(pagesVisited, pagesVisited + todosPerPage)
     .map((todo, index) => (
       <div
@@ -28,12 +38,10 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
           {todo.text}
         </div>
         <div className="icons">
-          {/* Delete icon */}
           <RiCloseCircleLine
             onClick={() => removeTodo(todo.id)}
             className="delete-icon"
           />
-          {/* Edit icon */}
           <TiEdit
             onClick={() => setEdit({ id: todo.id, value: todo.text })}
             className="edit-icon"
@@ -42,18 +50,22 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
       </div>
     ));
 
-  // Calculate the total number of pages needed for pagination
-  const pageCount = Math.ceil(todos.length / todosPerPage);
+  const pageCount = Math.ceil(filteredTodos.length / todosPerPage);
 
-  // Function to handle page change
   const changePage = ({ selected }) => {
     setPageNumber(selected);
   };
 
   return (
     <>
+      <div className="filter-container">
+        <span>Sort by:</span>
+        <select value={filter} onChange={filterChangeHandler}>
+          <option value="ascending">Ascending</option>
+          <option value="descending">Descending</option>
+        </select>
+      </div>
       {displayTodos}
-      {/* Pagination component */}
       <ReactPaginate
         previousLabel={"Previous"}
         nextLabel={"Next"}
