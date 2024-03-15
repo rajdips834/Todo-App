@@ -5,15 +5,18 @@ import { TiEdit } from "react-icons/ti";
 import ReactPaginate from "react-paginate";
 
 const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
+  // State to manage the input value which will be used to edit a task
   const [edit, setEdit] = useState({
     id: null,
     value: "",
   });
 
-  const [pageNumber, setPageNumber] = useState(0);
+  // Pagination related code
+  const [pageNumber, setPageNumber] = useState(0); //current page number
   const todosPerPage = 5; // Number of todos to display per page
-  const pagesVisited = pageNumber * todosPerPage;
+  const pagesVisited = pageNumber * todosPerPage; //
 
+  // Slice the todos array to display only the relevant todos for the current page
   const displayTodos = todos
     .slice(pagesVisited, pagesVisited + todosPerPage)
     .map((todo, index) => (
@@ -39,8 +42,10 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
       </div>
     ));
 
+  // Calculate the total number of pages needed for pagination
   const pageCount = Math.ceil(todos.length / todosPerPage);
 
+  // Function to handle page change
   const changePage = ({ selected }) => {
     setPageNumber(selected);
   };
@@ -48,6 +53,7 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
   return (
     <>
       {displayTodos}
+      {/* Pagination component */}
       <ReactPaginate
         previousLabel={"Previous"}
         nextLabel={"Next"}
