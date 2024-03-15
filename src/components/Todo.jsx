@@ -60,7 +60,11 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
     <>
       <div className="filter-container">
         <span>Sort by:</span>
-        <select value={filter} onChange={filterChangeHandler}>
+        <select
+          className="filter"
+          value={filter}
+          onChange={filterChangeHandler}
+        >
           <option value="ascending">Ascending</option>
           <option value="descending">Descending</option>
         </select>

@@ -182,3 +182,19 @@ h1 {
     margin: 5px 0;
   }
 }
+
+  .filter-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+.filter{
+  color:#149fff;
+  display: inline-block;
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: black;
+}
