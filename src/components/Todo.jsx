@@ -9,6 +9,7 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
     value: "",
   });
 
+  // Function to handle the submission of an updated todo
   const submitUpdate = (value) => {
     updateTodo(edit.id, value);
     setEdit({
@@ -17,10 +18,12 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
     });
   };
 
+  // If edit mode is active, render the TodoForm component
   if (edit.id) {
     return <TodoForm edit={edit} onSubmit={submitUpdate} />;
   }
 
+  // Render the list of todos
   return todos.map((todo, index) => (
     <div
       className={todo.isComplete ? "todo-row complete" : "todo-row"}
@@ -30,10 +33,12 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
         {todo.text}
       </div>
       <div className="icons">
+        {/* Delete icon */}
         <RiCloseCircleLine
-          onClick={() => removeTodo(todo)}
+          onClick={() => removeTodo(todo.id)}
           className="delete-icon"
         />
+        {/* Edit icon */}
         <TiEdit
           onClick={() => setEdit({ id: todo.id, value: todo.text })}
           className="edit-icon"

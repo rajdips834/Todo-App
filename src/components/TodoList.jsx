@@ -70,12 +70,12 @@ function TodoList() {
 
   // Function to remove a todo
   const removeTodo = async (id) => {
-    console.log(id);
     try {
-      await deleteDoc(doc(db, "tasks", todo.id.value));
+      await deleteDoc(doc(db, "tasks", id));
       // Check if todos is an array before filtering
 
       const removedArr = todos.filter((todo) => todo.id !== id);
+      console.log(removedArr);
       setTodos(removedArr);
     } catch (error) {
       console.error("Error removing document: ", error);
