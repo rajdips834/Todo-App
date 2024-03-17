@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { TiEdit } from "react-icons/ti";
 import ReactPaginate from "react-paginate";
-import { FaFilter } from "react-icons/fa";
-
+import TodoForm from "./TodoForm";
 const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
   const [edit, setEdit] = useState({
     id: null,
@@ -43,18 +42,30 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
             className="delete-icon"
           />
           <TiEdit
-            onClick={() => setEdit({ id: todo.id, value: todo.text })}
+            onClick={() => {
+              setEdit({ id: todo.id, value: todo.text });
+            }}
             className="edit-icon"
           />
         </div>
       </div>
     ));
+  const submitUpdate = (value) => {
+    updateTodo(edit.id, value);
+    setEdit({
+      id: null,
+      value: "",
+    });
+  };
 
   const pageCount = Math.ceil(filteredTodos.length / todosPerPage);
 
   const changePage = ({ selected }) => {
     setPageNumber(selected);
   };
+  if (edit.id) {
+    return <TodoForm edit={edit} onSubmit={submitUpdate} />;
+  }
 
   return (
     <>
