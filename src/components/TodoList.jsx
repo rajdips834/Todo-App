@@ -1,57 +1,111 @@
 import React, { useEffect, useState } from "react";
 import TodoForm from "./TodoForm";
 import Todo from "./Todo";
+import db from "../firebase";
+import {
+  onSnapshot,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  setDoc,
+} from "firebase/firestore";
 
 function TodoList() {
+  // State to hold the todos
   const [todos, setTodos] = useState([]);
 
+  // Fetch todos from Firebase when component mounts
   useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem("todos"));
-    if (storedTodos) {
-      setTodos(storedTodos);
-    }
+    // Subscribe to changes in the "tasks" collection
+    const unsubscribe = onSnapshot(collection(db, "tasks"), (snapshot) => {
+      // Map the documents to todo objects and update state
+      const newTodos = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTodos(newTodos);
+    });
+
+    // Unsubscribe from the snapshot listener when component unmounts
+    return () => unsubscribe();
   }, []);
 
-  const addTodo = (todo) => {
+  // Function to add a new todo
+  const addTodo = async (todo) => {
+    todo.id = "";
     if (!todo.text || /^\s*$/.test(todo.text)) {
       return;
     }
 
-    const newTodos = [todo, ...todos];
+    try {
+      // Add the new todo to the "tasks" collection in Firebase
+      const docRef = await addDoc(collection(db, "tasks"), todo);
+      const docId = docRef.id;
+      await updateDoc(docRef, { id: docId });
 
-    setTodos(newTodos);
-    localStorage.setItem("todos", JSON.stringify(newTodos));
+      // Update the local state with the new todo
+      const newTodo = { id: docId, ...todo };
+      setTodos([...todos, newTodo]);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
-  const updateTodo = (todoId, newValue) => {
+  // Function to update an existing todo
+  const updateTodo = async (todoId, newValue) => {
     if (!newValue.text || /^\s*$/.test(newValue.text)) {
       return;
     }
 
-    setTodos((prev) =>
-      prev.map((item) => (item.id === todoId ? newValue : item))
-    );
-
-    localStorage.setItem("todos", JSON.stringify(todos));
+    try {
+      await setDoc(doc(db, "tasks", todoId), newValue);
+      // Check if todos is an array before mapping
+      if (Array.isArray(todos)) {
+        const updatedTodos = todos.map((todo) =>
+          todo.id === todoId ? { ...todo, ...newValue } : todo
+        );
+        setTodos(updatedTodos);
+      }
+    } catch (error) {
+      console.error("Error updating document: ", error);
+    }
   };
 
-  const removeTodo = (id) => {
-    const removedArr = [...todos].filter((todo) => todo.id !== id);
+  // Function to remove a todo
+  // Function to remove a todo
+  const removeTodo = async (id) => {
+    try {
+      // Delete the document with the specified ID from the "tasks" collection
+      await deleteDoc(doc(db, "tasks", id));
 
-    setTodos(removedArr);
-    localStorage.setItem("todos", JSON.stringify(removedArr));
+      // Filter out the removed todo from the local state
+      const removedArr = todos.filter((todo) => todo.id !== id);
+      setTodos(removedArr);
+    } catch (error) {
+      console.error("Error removing document: ", error);
+    }
   };
-
-  const completeTodo = (id) => {
-    let updatedTodos = todos.map((todo) => {
+  // Function to toggle the completion status of a todo
+  const completeTodo = async (id) => {
+    const updatedTodos = todos.map((todo) => {
       if (todo.id === id) {
         todo.isComplete = !todo.isComplete;
       }
       return todo;
     });
 
-    setTodos(updatedTodos);
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    try {
+      // Update the todo in the "tasks" collection in Firebase
+      await setDoc(doc(db, "tasks", id), {
+        isComplete: updatedTodos.find((todo) => todo.id === id).isComplete,
+      });
+      // Update the local state with the updated todo
+      setTodos(updatedTodos);
+    } catch (error) {
+      console.error("Error updating document: ", error);
+    }
   };
 
   return (
