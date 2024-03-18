@@ -23,7 +23,6 @@ function TodoForm(props) {
 
     // Submit the todo item with a random id
     props.onSubmit({
-      id: Math.floor(Math.random() * 10000),
       text: input,
     });
     setInput("");

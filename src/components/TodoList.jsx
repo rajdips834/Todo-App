@@ -8,6 +8,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  updateDoc,
   setDoc,
 } from "firebase/firestore";
 
@@ -33,6 +34,7 @@ function TodoList() {
 
   // Function to add a new todo
   const addTodo = async (todo) => {
+    todo.id = "";
     if (!todo.text || /^\s*$/.test(todo.text)) {
       return;
     }
@@ -40,8 +42,11 @@ function TodoList() {
     try {
       // Add the new todo to the "tasks" collection in Firebase
       const docRef = await addDoc(collection(db, "tasks"), todo);
+      const docId = docRef.id;
+      await updateDoc(docRef, { id: docId });
+
       // Update the local state with the new todo
-      const newTodo = { id: docRef.id, ...todo };
+      const newTodo = { id: docId, ...todo };
       setTodos([...todos, newTodo]);
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -69,13 +74,14 @@ function TodoList() {
   };
 
   // Function to remove a todo
+  // Function to remove a todo
   const removeTodo = async (id) => {
     try {
+      // Delete the document with the specified ID from the "tasks" collection
       await deleteDoc(doc(db, "tasks", id));
-      // Check if todos is an array before filtering
 
+      // Filter out the removed todo from the local state
       const removedArr = todos.filter((todo) => todo.id !== id);
-      console.log(removedArr);
       setTodos(removedArr);
     } catch (error) {
       console.error("Error removing document: ", error);
